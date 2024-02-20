@@ -40,6 +40,37 @@ def local_translate(seq):
         seq += 'N' * (3 - (len(seq) % 3))
     return bio_translate(seq)
 
+# ---------------------------------------------------------------------------------------
+def reverse_translate(aa_seq):
+    codon_table = {
+        'A': ['GCT', 'GCC', 'GCA', 'GCG'],
+        'R': ['CGT', 'CGC', 'CGA', 'CGG', 'AGA', 'AGG'],
+        'N': ['AAT', 'AAC'],
+        'D': ['GAT', 'GAC'],
+        'C': ['TGT', 'TGC'],
+        'Q': ['CAA', 'CAG'],
+        'E': ['GAA', 'GAG'],
+        'G': ['GGT', 'GGC', 'GGA', 'GGG'],
+        'H': ['CAT', 'CAC'],
+        'I': ['ATT', 'ATC', 'ATA'],
+        'L': ['TTA', 'TTG', 'CTT', 'CTC', 'CTA', 'CTG'],
+        'K': ['AAA', 'AAG'],
+        'M': ['ATG'],
+        'F': ['TTT', 'TTC'],
+        'P': ['CCT', 'CCC', 'CCA', 'CCG'],
+        'S': ['TCT', 'TCC', 'TCA', 'TCG', 'AGT', 'AGC'],
+        'T': ['ACT', 'ACC', 'ACA', 'ACG'],
+        'W': ['TGG'],
+        'Y': ['TAT', 'TAC'],
+        'V': ['GTT', 'GTC', 'GTA', 'GTG'],
+        '*': ['TAA', 'TAG', 'TGA']
+    }
+
+    dna_sequence = ''
+    for aa in aa_seq:
+        nt_sequence += codon_table[aa][0]  # Choose the first codon for each amino acid
+    return nt_sequence
+
 # ----------------------------------------------------------------------------------------
 def get_codon(nuc_seq, inuc):  # return codon in <nuc_seq> that contains <inuc>
     i_codon_start = 3 * int(inuc / 3)

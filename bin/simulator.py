@@ -24,10 +24,12 @@ try:
 except:
     import pickle
 
-from GCutils import hamming_distance, nonfunc_aa, local_translate, replace_codon_in_aa_seq, CollapsedTree, TranslatedSeq, get_codon
+from GCutils import hamming_distance, nonfunc_aa, local_translate, replace_codon_in_aa_seq, CollapsedTree, TranslatedSeq, get_codon, reverse_translate
 import selection_utils
 from selection_utils import color
 from selection_utils import target_distance_fcn
+from Bio.Seq import translate as bio_translate
+
 
 scipy.seterr(all='raise')
 
@@ -329,7 +331,7 @@ class MutationModel():
     # ----------------------------------------------------------------------------------------
     def get_targets(self, args):
         start = time.time()
-
+        
         main_target_count = args.target_count if args.n_target_clusters is None else args.n_target_clusters
         if args.n_target_clusters is not None:
             print('      making %d main target sequences' % main_target_count)
@@ -464,7 +466,16 @@ class MutationModel():
         '''
 
         self.sampled_tdist_hists, self.tdist_hists, self.n_nuc_mutated_hists, self.n_aa_mutated_hists = [None], [None], [None], [None]
-        self.target_seqs = self.get_targets(args)
+
+        if args.target_sequence is None:
+            self.target_seqs = self.get_targets(args)
+        else:
+            target_seq_aa = args.target_sequence.upper()
+            target_seq_nt = reverse_translate(target_seq_aa)
+            translated_reverse_translated = bio_translate(target_seq_nt)
+            if translated_reverse_translated != target_seq_aa:
+                raise ValueError("Translate target_seq_nt is not equal to target_seq_aa")
+            self.target_seqs = [TranslatedSeq(args, nt_seq=target_seq_nt, aa_seq=target_seq_aa)]
 
         current_time = 0
         self.n_unterminated_leaves = 1
@@ -832,6 +843,7 @@ def main():
     parser.add_argument('--observe_common_ancestors', action='store_true', help='If set, after deciding which nodes to observe (write to file) according to other options, we then also select the most recent common ancestor for every pair of those nodes (the idea is that this gets you the nodes that you would reconstruct with a phylogenetic program). NOTE histograms written to disk currently don\'t include these.')
     parser.add_argument('--leaf_sampling_scheme', default='uniform-random', choices=['uniform-random', 'affinity-biased', 'high-affinity'], help='When selecting cells to observe, we can either sample entirely randomly (\'uniform-random\', default), randomly sample with each cell\'s weight 1/Kd (\'affinity-biased\'), or sort cells by Kd and choose precisely the highest-affinity cells (\'high-affinity\').')
     # target sequence control
+    parser.add_argument('--target_seq', default=None, help='If set, use this as the target sequence (in addition to the naive sequence).')
     parser.add_argument('--target_count', type=int, default=10, help='The number of target sequences to generate.')
     parser.add_argument('--target_distance', type=int, default=10, help='Desired distance (using --metric_for_target_distance) between the naive sequence and the target sequence(s). By default serves also as --tdist_scale, but see also help for that arg. Set to 0 for pure negative selection.')
     parser.add_argument('--tdist_scale', type=int, help='scale over which Kd varies with target distance (denominator over which each target seq\'s target distance is divided). Defaults to --target_distance, but you may want to set it separately for very small --target_distance values (so that small changes in distance don\'t make huge changes to Kd).')
