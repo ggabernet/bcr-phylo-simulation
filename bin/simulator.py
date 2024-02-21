@@ -15,7 +15,6 @@ import itertools
 import scipy
 from scipy import stats
 import numpy
-from colored_traceback import always
 import sys
 from ete3 import TreeNode, TreeStyle, NodeStyle, SVG_COLORS
 import matplotlib; matplotlib.use('agg')
