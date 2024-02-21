@@ -66,7 +66,7 @@ def reverse_translate(aa_seq):
         '*': ['TAA', 'TAG', 'TGA']
     }
 
-    dna_sequence = ''
+    nt_sequence = ''
     for aa in aa_seq:
         nt_sequence += codon_table[aa][0]  # Choose the first codon for each amino acid
     return nt_sequence
