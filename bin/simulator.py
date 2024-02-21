@@ -466,10 +466,10 @@ class MutationModel():
 
         self.sampled_tdist_hists, self.tdist_hists, self.n_nuc_mutated_hists, self.n_aa_mutated_hists = [None], [None], [None], [None]
 
-        if args.target_sequence is None:
+        if args.target_seq is None:
             self.target_seqs = self.get_targets(args)
         else:
-            target_seq_aa = args.target_sequence.upper()
+            target_seq_aa = args.target_seq.upper()
             target_seq_nt = reverse_translate(target_seq_aa)
             translated_reverse_translated = bio_translate(target_seq_nt)
             if translated_reverse_translated != target_seq_aa:
