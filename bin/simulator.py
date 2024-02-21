@@ -474,7 +474,7 @@ class MutationModel():
             translated_reverse_translated = bio_translate(target_seq_nt)
             if translated_reverse_translated != target_seq_aa:
                 raise ValueError("Translate target_seq_nt is not equal to target_seq_aa")
-            self.target_seqs = [TranslatedSeq(args, nt_seq=target_seq_nt, aa_seq=target_seq_aa)]
+            self.target_seqs = [TranslatedSeq(args, nuc_seq=target_seq_nt, aa_seq=target_seq_aa)]
 
         current_time = 0
         self.n_unterminated_leaves = 1
