@@ -445,12 +445,17 @@ class MutationModel():
                 finished = True
                 successful = True
         if args.stop_dist is not None and current_time > 0:
-            min_tdist = min([l.target_distance for l in updated_live_leaves])
-            dbgstr += ['min tdist %d' % min_tdist]
-            if min_tdist <= args.stop_dist:  # if the leaves have gotten close enough to the target sequences
-                termstr += ['    --stop_dist: breaking with min target distance %d <= %d' % (min_tdist, args.stop_dist)]
+            if len(updated_live_leaves) >0:
+                min_tdist = min([l.target_distance for l in updated_live_leaves])
+                dbgstr += ['min tdist %d' % min_tdist]
+                if min_tdist <= args.stop_dist:  # if the leaves have gotten close enough to the target sequences
+                    termstr += ['    --stop_dist: breaking with min target distance %d <= %d' % (min_tdist, args.stop_dist)]
+                    finished = True
+                    successful = True
+            else:
+                termstr += ['    stopping: no updated live leaves']
                 finished = True
-                successful = True
+                successful = False  
         if finished and self.n_unterminated_leaves < 2:  # moving this check from later on, so we can rerun if we finish successfully but only have one leaf (I think some of the post-processing steps must fail if there's only one leaf)
             successful = False
         return finished, successful, ', '.join(dbgstr), '\n'.join(termstr)
