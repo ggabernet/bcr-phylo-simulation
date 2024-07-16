@@ -2,21 +2,21 @@ name: bpb
 channels:
   - conda-forge
   - defaults
+  - bioconda
 dependencies:
   - python=2.7
   - pip
   - pyqt
-  - pip:
-    - biopython==1.76
-    - colored_traceback
-    - dendropy
-    - ete3
-    - matplotlib
-    - nestly
-    - numpy
-    - pandas
-    - scipy
-    - scons
-    - seaborn
-    - seqmagick
-    - statsmodels
+  - conda-forge::biopython=1.76
+  - bioconda::dendropy
+  - conda-forge::ete3
+  - conda-forge::matplotlib
+  - conda-forge::nestly
+  - conda-forge::numpy
+  - conda-forge::pandas
+  - conda-forge::scipy
+  - conda-forge::scons
+  - conda-forge::seaborn
+  - bioconda::seqmagick
+  - conda-forge::statsmodels
+  - conda-forge::colored-traceback

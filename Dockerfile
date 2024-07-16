@@ -2,15 +2,15 @@
 # https://fmgdata.kinja.com/using-docker-with-conda-environments-1790901398
 
 # Start from miniconda image:
-FROM continuumio/miniconda
+FROM continuumio/miniconda3
 
 
 # Set the ENTRYPOINT to use bash
 # (this is also where you’d set SHELL,
 # if your version of docker supports this)
-ENTRYPOINT ["/bin/bash", "-c"]
+#ENTRYPOINT ["/bin/bash", "-c"]
 
-EXPOSE 5000
+#EXPOSE 5000
 
 
 # Install some essential things:
@@ -33,23 +33,16 @@ RUN cpan install PDL::LinearAlgebra::Trans
 # Use the conda environment yaml file to create the "bpb" conda environment:
 ADD environment_bpb.yml /tmp/environment_bpb.yml
 WORKDIR /tmp
-RUN ["conda", "env", "create", "-f", "environment_bpb.yml"]
+RUN conda update -n base -c defaults conda
+RUN conda install -c conda-forge mamba
+ADD environment_bpb.yml /tmp/environment_bpb.yml
+RUN ["mamba", "env", "create", "-f", "environment_bpb.yml"]
+
+# Add the conda environment to the path:
+ENV PATH /opt/conda/envs/bpb/bin:$PATH
 
 
 # Copy over the repository:
 WORKDIR /bcr-phylo-benchmark
 COPY . /bcr-phylo-benchmark
-
-
-# Tools to compile IgPhyML:
-RUN apt-get install -y autotools-dev automake
-
-# Compile IgPhyML (required to update hard-coded paths...):
-RUN cd tools/IgPhyML && ./make_phyml_omp && cd ../..
-
-
-# Run small test (this may take an hour and can be turned off).
-# Notice that we have to load the conda environment in the same process as the test script
-# to execute the test under the "bpb" environment.
-RUN ["/bin/bash", "-c", "source activate bpb && ./test.sh"]
 
